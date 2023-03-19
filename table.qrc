@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>img/Axenix_logo_table.png</file>
+  </qresource>
+</RCC>
