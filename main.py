@@ -3,7 +3,7 @@ import pandas as pd
 import random as r
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn import metrics
 import numpy as np
 import psycopg2
@@ -96,9 +96,9 @@ def get_apps(data_apps, to_predict=False):
         X = data_apps_gr.iloc[:, :-1].values
         y = data_apps_gr.iloc[:, -1].values
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=0)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-        regressor = LinearRegression()
+        regressor = RandomForestRegressor()
         regressor.fit(X_train, y_train)
         res = []
         for el in EMPLOYERS:
@@ -125,9 +125,9 @@ def get_commits(data_commits, to_predict=False):
         X = data_commits_gr.iloc[:, :-1].values
         y = data_commits_gr.iloc[:, -1].values
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=0)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-        regressor = LinearRegression()
+        regressor = RandomForestRegressor()
         regressor.fit(X_train, y_train)
 
         res = []
@@ -160,9 +160,9 @@ def get_messages(data_messages, to_predict=False):
         X = data_messages_gr.iloc[:, :-1].values
         y = data_messages_gr.iloc[:, -1].values
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=0)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-        regressor = LinearRegression()
+        regressor = RandomForestRegressor()
         regressor.fit(X_train, y_train)
 
         res = []
@@ -195,14 +195,19 @@ def get_task_manager(data_task_manager, to_predict=False):
 
         X = data_task_manager_gr.iloc[:, :-1].values
         y = data_task_manager_gr.iloc[:, -1].values
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, random_state=0)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 
-        regressor = LinearRegression()
+        regressor = RandomForestRegressor()
         regressor.fit(X_train, y_train)
         res = []
         for el in EMPLOYERS:
             y_pred = regressor.predict([new_df_gr.loc[[el], 'bad_relocating']])
             res.append(y_pred[0])
+        y_pred_new = regressor.predict(X_test)
+
+        print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred_new))
+        print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred_new))
+        print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred_new)))
 
         return res
     return data_task_manager_gr
